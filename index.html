@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Epilepsy: Network Dynamics - SAMUELSON G.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: {
+                            50: '#fdfbf7',
+                            100: '#f7f4ec',
+                            800: '#2d3748',
+                            900: '#1a202c',
+                        },
+                        accent: {
+                            teal: '#0f766e',
+                            amber: '#b45309',
+                            rose: '#be123c'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Merriweather', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; color: #2d3748; }
+        h1, h2, h3, h4 { font-family: 'Merriweather', serif; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 40vh; min-height: 300px; max-height: 450px; }
+        .tab-active { border-bottom: 2px solid #0f766e; color: #0f766e; font-weight: 600; }
+        .tab-inactive { color: #718096; }
+        .tab-inactive:hover { color: #2d3748; }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+        .level-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.8s ease; }
+    </style>
+</head>
+<body class="antialiased text-paper-800 selection:bg-accent-teal selection:text-white pb-20">
+
+    <!-- Chosen Palette: Warm Neutrals with Teal and Amber accents -->
+    <!-- Application Structure Plan: The SPA is structured as an interactive executive summary of a research paper. It uses a top navigation bar for quick jumps, a hero section for metadata, and thematic sections (Abstract, Epidemiology, Pathophysiology, Innovations). The structure prioritizes a linear narrative flow enriched with interactive data visualizations (Chart.js) and a state-simulation tool to explain complex neurological concepts without overwhelming the user with a massive wall of text. -->
+    <!-- Visualization & Content Choices: Epidemiology -> Inform -> Doughnut/Bar Charts -> Hover tooltips -> Justification: Clear proportional representation of treatment gaps and regional prevalence -> Library: Chart.js. Pathophysiology -> Change/Explain -> Interactive State Toggle -> Button click updates DOM bars -> Justification: Visually demonstrates the Excitatory/Inhibitory imbalance core to epilepsy in a tangible way -> Library: Vanilla JS + HTML/CSS. Innovations -> Compare -> Line Chart -> Hover -> Justification: Shows the progression of treatment efficacy over time -> Library: Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="fixed top-0 w-full z-50 glass-panel shadow-sm border-b border-paper-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 font-serif font-bold text-xl text-accent-teal">
+                    &#129504; NeuralEpilepsy
+                </div>
+                <ul class="hidden md:flex space-x-8">
+                    <li><a href="#abstract" class="text-sm font-medium text-paper-800 hover:text-accent-teal transition-colors">Abstract</a></li>
+                    <li><a href="#epidemiology" class="text-sm font-medium text-paper-800 hover:text-accent-teal transition-colors">Epidemiology</a></li>
+                    <li><a href="#pathophysiology" class="text-sm font-medium text-paper-800 hover:text-accent-teal transition-colors">Pathophysiology</a></li>
+                    <li><a href="#innovations" class="text-sm font-medium text-paper-800 hover:text-accent-teal transition-colors">Innovations</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center justify-center px-3 py-1 mb-6 text-xs font-semibold tracking-wider text-accent-amber uppercase bg-amber-100 rounded-full">
+            Peer-Reviewed Research Interactive Digest
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-paper-900 mb-6 leading-tight">
+            Unraveling the Network Dynamics of Neural Epilepsy: A Systems-Level Perspective
+        </h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            Interactive analysis of hyperexcitability, network hypersynchrony, and advanced interventional modalities in modern epileptology.
+        </p>
+        <div class="flex items-center justify-center space-x-4">
+            <div class="w-12 h-12 bg-accent-teal text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg">
+            
+            </div>
+            <div class="text-left">
+                <p class="font-bold text-paper-900">SAMUELSON G.</p>
+                <p class="text-sm text-gray-500">Independent Researcher, Systems Neuroscience</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+
+        <section id="abstract" class="scroll-mt-24">
+            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-paper-100">
+                <h2 class="text-2xl font-bold text-paper-900 mb-6 flex items-center gap-2">
+                    <span class="text-accent-teal">&#128269;</span> Abstract & Executive Summary
+                </h2>
+                <p class="text-gray-700 leading-relaxed mb-6 text-lg">
+                    This application translates the core findings of the comprehensive report on Neural Epilepsy. Historically viewed merely as a localized cellular anomaly, epilepsy is now definitively understood as a disorder of <strong>large-scale neural network dynamics</strong>. The report synthesizes the latest data on channelopathies, synaptic remodeling, and astrocytic involvement, framing seizures as emergent phenomena of pathological network synchronization.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                    <div class="p-6 bg-paper-50 rounded-xl border border-paper-100">
+                        <div class="text-3xl mb-3 text-accent-teal">&#128202;</div>
+                        <h3 class="font-bold text-paper-900 mb-2">Global Burden</h3>
+                        <p class="text-sm text-gray-600">Over 50 million affected globally, with a disproportionate treatment gap in low and middle-income demographics.</p>
+                    </div>
+                    <div class="p-6 bg-paper-50 rounded-xl border border-paper-100">
+                        <div class="text-3xl mb-3 text-accent-amber">&#9889;</div>
+                        <h3 class="font-bold text-paper-900 mb-2">Network Imbalance</h3>
+                        <p class="text-sm text-gray-600">Seizure genesis is driven by a critical breakdown in the Excitation/Inhibition (E/I) equilibrium at the synaptic level.</p>
+                    </div>
+                    <div class="p-6 bg-paper-50 rounded-xl border border-paper-100">
+                        <div class="text-3xl mb-3 text-accent-rose">&#128161;</div>
+                        <h3 class="font-bold text-paper-900 mb-2">Therapeutic Horizon</h3>
+                        <p class="text-sm text-gray-600">Shift from purely pharmacological interventions toward closed-loop neuromodulation and predictive AI algorithms.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="epidemiology" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-paper-900 mb-4">Epidemiological Landscape</h2>
+                <p class="text-gray-700 text-lg">
+                    This section visualizes the macroscopic data from the report. It highlights the stark contrasts in treatment accessibility and the persistent challenge of pharmacoresistant epilepsy.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-paper-100">
+                    <h3 class="text-xl font-bold text-center mb-2">Global Treatment Gap</h3>
+                    <p class="text-sm text-center text-gray-500 mb-6">Proportion of patients receiving adequate care vs. untreated.</p>
+                    <div class="chart-container">
+                        <canvas id="treatmentGapChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-sm text-gray-600 text-center px-4">
+                        The "Treatment Gap" represents individuals with active epilepsy whose seizures are not appropriately treated. In low-income regions, this gap exceeds 75%.
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-paper-100">
+                    <h3 class="text-xl font-bold text-center mb-2">Drug Resistance Spectrum</h3>
+                    <p class="text-sm text-center text-gray-500 mb-6">Patient response to Antiseizure Medications (ASMs).</p>
+                    <div class="chart-container">
+                        <canvas id="resistanceChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-sm text-gray-600 text-center px-4">
+                        Despite over 30 new ASMs introduced since 1990, roughly one-third of all patients remain fundamentally drug-resistant, necessitating alternative interventions.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pathophysiology" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-paper-900 mb-4">Pathophysiology: The E/I Balance</h2>
+                <p class="text-gray-700 text-lg">
+                    At the micro-network level, the report details how neural homeostasis relies on a delicate balance between excitatory (Glutamate) and inhibitory (GABA) neurotransmission. Use the interactive simulator below to observe the network shift during an epileptogenic event.
+                </p>
+            </div>
+
+            <div class="bg-paper-900 rounded-3xl p-8 shadow-xl text-white">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Network State Simulator</h3>
+                        <p class="text-gray-400 text-sm max-w-md" id="sim-description">
+                            Currently showing normal physiological homeostasis. Excitatory and inhibitory forces are balanced, allowing for organized, functional neural processing.
+                        </p>
+                    </div>
+                    <div class="flex bg-paper-800 p-1 rounded-lg border border-gray-700">
+                        <button id="btn-homeostasis" class="px-6 py-2 rounded-md bg-accent-teal text-white font-medium transition-all shadow-sm">Homeostasis</button>
+                        <button id="btn-seizure" class="px-6 py-2 rounded-md text-gray-400 hover:text-white transition-all font-medium">Ictal Event (Seizure)</button>
+                    </div>
+                </div>
+
+                <div class="space-y-8 max-w-3xl mx-auto">
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-2 uppercase tracking-wider">
+                            <span class="text-accent-amber">Glutamate (Excitatory)</span>
+                            <span id="glu-value" class="text-accent-amber">50%</span>
+                        </div>
+                        <div class="h-6 w-full bg-gray-800 rounded-full overflow-hidden">
+                            <div id="bar-glu" class="h-full bg-accent-amber level-bar" style="width: 50%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-2 uppercase tracking-wider">
+                            <span class="text-blue-400">GABA (Inhibitory)</span>
+                            <span id="gaba-value" class="text-blue-400">50%</span>
+                        </div>
+                        <div class="h-6 w-full bg-gray-800 rounded-full overflow-hidden">
+                            <div id="bar-gaba" class="h-full bg-blue-500 level-bar" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-gray-700 text-center">
+                        <div class="inline-block px-4 py-2 rounded bg-gray-800 text-gray-300 font-mono text-sm shadow-inner" id="network-status">
+                            STATUS: Normal Synchronization (Beta/Gamma Rhythms)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="innovations" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-paper-900 mb-4">Therapeutic Innovations</h2>
+                <p class="text-gray-700 text-lg">
+                    The final chapters of the research highlight the transition from empirical pharmacology to precision engineering. The chart below tracks the historical and projected efficacy of major intervention paradigms.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-paper-100">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                    <h3 class="text-xl font-bold">Efficacy Evolution by Modality (1980 - 2030)</h3>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1 text-xs font-bold rounded bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="updateEfficacyChart('all')">All</button>
+                        <button class="px-3 py-1 text-xs font-bold rounded bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="updateEfficacyChart('neuro')">Focus: Neuromodulation</button>
+                    </div>
+                </div>
+                <div class="chart-container relative w-full h-[50vh] min-h-[400px]">
+                    <canvas id="efficacyChart"></canvas>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 border border-gray-100 rounded-lg bg-gray-50">
+                        <div class="font-bold text-accent-teal mb-1">&#128377; Closed-Loop Systems (RNS)</div>
+                        <p class="text-sm text-gray-600">Responsive Neurostimulation devices continuously monitor brain activity (ECoG) and deliver targeted electrical pulses only when epileptiform activity is detected, preventing clinical seizures before they manifest.</p>
+                    </div>
+                    <div class="p-4 border border-gray-100 rounded-lg bg-gray-50">
+                        <div class="font-bold text-accent-amber mb-1">&#128187; AI & Predictive Algorithms</div>
+                        <p class="text-sm text-gray-600">Machine learning models analyzing multimodal data (EEG, wearables) are achieving >85% accuracy in forecasting seizures minutes to hours in advance, allowing for preemptive acute intervention.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-paper-900 text-white py-12 mt-24">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="font-serif font-bold text-2xl text-accent-teal mb-4">&#129504; NeuralEpilepsy</div>
+            <p class="text-gray-400 text-sm mb-6 max-w-2xl mx-auto">
+                Interactive companion to the research paper "Unraveling the Network Dynamics of Neural Epilepsy: A Systems-Level Perspective" by SAMUELSON G. All data visualizations are generated dynamically based on report metrics.
+            </p>
+            <div class="text-gray-500 text-xs">
+                &copy; 2026 Samuelson G. Interactive Research Publication format.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { family: 'Inter' } } },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 32, 44, 0.9)',
+                    titleFont: { family: 'Inter', size: 14 },
+                    bodyFont: { family: 'Inter', size: 13 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) { label += ': '; }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '%';
+                            } else {
+                                label += context.parsed + '%';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        const ctxGap = document.getElementById('treatmentGapChart').getContext('2d');
+        const treatmentGapChart = new Chart(ctxGap, {
+            type: 'doughnut',
+            data: {
+                labels: ['Treated Successfully', 'Treated (Inadequately)', 'Untreated (Treatment Gap)'],
+                datasets: [{
+                    data: [25, 15, 60],
+                    backgroundColor: ['#0f766e', '#fbbf24', '#be123c'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                ...chartOptions,
+                cutout: '65%',
+                plugins: {
+                    ...chartOptions.plugins,
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        const ctxRes = document.getElementById('resistanceChart').getContext('2d');
+        const resistanceChart = new Chart(ctxRes, {
+            type: 'bar',
+            data: {
+                labels: ['Seizure Free (1st Drug)', 'Seizure Free (2nd Drug)', 'Drug Resistant'],
+                datasets: [{
+                    label: 'Patient Population (%)',
+                    data: [47, 13, 40],
+                    backgroundColor: ['#0f766e', '#0d9488', '#2d3748'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: '#f3f4f6' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: chartOptions.plugins.tooltip
+                }
+            }
+        });
+
+        const ctxEff = document.getElementById('efficacyChart').getContext('2d');
+        const efficacyDataAll = {
+            labels: ['1980', '1990', '2000', '2010', '2020', '2030 (Proj)'],
+            datasets: [
+                {
+                    label: 'Pharmacology (1st Gen)',
+                    data: [45, 46, 47, 47, 47, 47],
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Pharmacology (New Gen)',
+                    data: [null, 10, 25, 35, 38, 40],
+                    borderColor: '#0f766e',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    tension: 0.4
+                },
+                {
+                    label: 'Closed-Loop Neuromodulation',
+                    data: [null, null, null, 15, 55, 75],
+                    borderColor: '#b45309',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    tension: 0.4
+                }
+            ]
+        };
+
+        let efficacyChartInstance = new Chart(ctxEff, {
+            type: 'line',
+            data: efficacyDataAll,
+            options: {
+                ...chartOptions,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        title: { display: true, text: 'Median Seizure Reduction (%)' },
+                        grid: { color: '#f3f4f6' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        window.updateEfficacyChart = function(view) {
+            if(view === 'neuro') {
+                efficacyChartInstance.data.datasets[0].hidden = true;
+                efficacyChartInstance.data.datasets[1].hidden = true;
+                efficacyChartInstance.data.datasets[2].borderDash = [];
+            } else {
+                efficacyChartInstance.data.datasets[0].hidden = false;
+                efficacyChartInstance.data.datasets[1].hidden = false;
+                efficacyChartInstance.data.datasets[2].borderDash = [5, 5];
+            }
+            efficacyChartInstance.update();
+        };
+
+        const btnHomeo = document.getElementById('btn-homeostasis');
+        const btnSeizure = document.getElementById('btn-seizure');
+        const barGlu = document.getElementById('bar-glu');
+        const barGaba = document.getElementById('bar-gaba');
+        const valGlu = document.getElementById('glu-value');
+        const valGaba = document.getElementById('gaba-value');
+        const simDesc = document.getElementById('sim-description');
+        const statusPill = document.getElementById('network-status');
+
+        btnHomeo.addEventListener('click', () => {
+            btnHomeo.classList.replace('text-gray-400', 'text-white');
+            btnHomeo.classList.replace('hover:text-white', 'bg-accent-teal');
+            btnHomeo.classList.add('bg-accent-teal', 'shadow-sm');
+            
+            btnSeizure.classList.replace('text-white', 'text-gray-400');
+            btnSeizure.classList.replace('bg-accent-rose', 'hover:text-white');
+            btnSeizure.classList.remove('bg-accent-rose', 'shadow-sm');
+
+            barGlu.style.width = '50%';
+            barGlu.style.backgroundColor = '#b45309'; 
+            barGaba.style.width = '50%';
+            barGaba.style.backgroundColor = '#3b82f6'; 
+
+            valGlu.innerText = '50% (Normal)';
+            valGlu.className = 'text-accent-amber';
+            valGaba.innerText = '50% (Normal)';
+            valGaba.className = 'text-blue-400';
+
+            simDesc.innerText = 'Currently showing normal physiological homeostasis. Excitatory and inhibitory forces are balanced, allowing for organized, functional neural processing.';
+            
+            statusPill.innerText = 'STATUS: Normal Synchronization (Beta/Gamma Rhythms)';
+            statusPill.className = 'inline-block px-4 py-2 rounded bg-gray-800 text-gray-300 font-mono text-sm shadow-inner';
+        });
+
+        btnSeizure.addEventListener('click', () => {
+            btnSeizure.classList.replace('text-gray-400', 'text-white');
+            btnSeizure.classList.replace('hover:text-white', 'bg-accent-rose');
+            btnSeizure.classList.add('bg-accent-rose', 'shadow-sm');
+            
+            btnHomeo.classList.replace('text-white', 'text-gray-400');
+            btnHomeo.classList.replace('bg-accent-teal', 'hover:text-white');
+            btnHomeo.classList.remove('bg-accent-teal', 'shadow-sm');
+
+            barGlu.style.width = '90%';
+            barGlu.style.backgroundColor = '#be123c'; 
+            barGaba.style.width = '20%';
+            barGaba.style.backgroundColor = '#1e3a8a'; 
+
+            valGlu.innerText = '90% (Surge)';
+            valGlu.className = 'text-accent-rose font-bold animate-pulse';
+            valGaba.innerText = '20% (Depleted)';
+            valGaba.className = 'text-blue-800';
+
+            simDesc.innerText = 'Pathological state: Sudden failure of GABAergic inhibition combined with massive Glutamatergic excitatory surge results in runaway network hypersynchrony and clinical seizure.';
+            
+            statusPill.innerText = 'STATUS: HYPERSYNCHRONY DETECTED (High Amplitude Spikes)';
+            statusPill.className = 'inline-block px-4 py-2 rounded bg-rose-900 text-rose-100 font-mono text-sm font-bold shadow-inner animate-pulse border border-rose-500';
+        });
+    </script>
+</body>
+</html>
